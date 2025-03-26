@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["active_vcpus","current_vcpu_id","current_vm_active_vcpus","current_vm_id","current_vm_vcpu_num","inject_interrupt","notify_vcpu_timer_expired","vcpu_num"],"type":["InterruptVector","VCpuId","VMId"]};

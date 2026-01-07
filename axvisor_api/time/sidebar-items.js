@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["cancel_timer","current_ticks","current_time","current_time_nanos","nanos_to_ticks","register_timer","ticks_to_nanos","ticks_to_time","time_to_ticks"],"trait":["TimeIf"],"type":["CancelToken","Nanos","Ticks","TimeValue"]};

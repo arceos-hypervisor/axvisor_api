@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["alloc_contiguous_frames","alloc_frame","dealloc_contiguous_frames","dealloc_frame","phys_to_virt","virt_to_phys"],"struct":["PhysAddr","VirtAddr"],"trait":["MemoryIf"],"type":["PhysFrame"]};

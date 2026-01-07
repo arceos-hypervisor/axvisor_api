@@ -1,0 +1,105 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="`axvisor_api` is the bottom-most crate of the AxVisor Hypervisor project. It provides a standardized set of APIs for the components of the Hypervisor and grants them access to OS-level and Hypervisor-level functionalities, like memory allocation, address conversion, time and timer management, cross-vcpu operations, and so on."><title>axvisor_api - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../static.files/rustdoc-0ce1a80b.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="axvisor_api" data-themes="" data-resource-suffix="" data-rustdoc-version="1.89.0-nightly (60dabef95 2025-05-19)" data-channel="nightly" data-search-js="search-f7877310.js" data-settings-js="settings-5514c975.js" ><script src="../static.files/storage-4e99c027.js"></script><script defer src="../crates.js"></script><script defer src="../static.files/main-7ef8a74a.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-32bb7600.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-044be391.svg"></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../axvisor_api/index.html">axvisor_<wbr>api</a><span class="version">0.2.0</span></h2></div><div class="sidebar-elems"><ul class="block"><li><a id="all-types" href="all.html">All Items</a></li></ul><section id="rustdoc-toc"><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#how-to-define-and-implement-apis" title="How to define and implement APIs">How to define and implement APIs</a><ul><li><a href="#define-apis" title="Define APIs">Define APIs</a></li><li><a href="#implement-apis" title="Implement APIs">Implement APIs</a></li></ul></li></ul><h3><a href="#modules">Crate Items</a></h3><ul class="block"><li><a href="#modules" title="Modules">Modules</a></li><li><a href="#attributes" title="Attribute Macros">Attribute Macros</a></li></ul></section><div id="rustdoc-modnav"></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><h1>Crate <span>axvisor_api</span><button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../src/axvisor_api/lib.rs.html#1-149">Source</a> </span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p><code>axvisor_api</code> is the bottom-most crate of the AxVisor Hypervisor project. It
+provides a standardized set of APIs for the components of the Hypervisor and
+grants them access to OS-level and Hypervisor-level functionalities, like
+memory allocation, address conversion, time and timer management, cross-vcpu
+operations, and so on.</p>
+<p><code>axvisor_api</code> is designed for two main purposes:</p>
+<ul>
+<li>
+<p><strong>Replace generic-based API-injection mechanism.</strong></p>
+<p>Generic-based API-injection mechanism, for example:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">pub trait </span>VCpuHal {
+    <span class="comment">/* ... */
+</span>}
+<span class="kw">pub struct </span>VCpu&lt;H: VCpuHal&gt; {
+    <span class="comment">/* ... */
+</span>}</code></pre></div>
+<p>has been widely used previously here and in other related projects. It’s
+definitely great, with zero overhead, good readability, and no link-time
+magic. However, it turns out that passing generic parameters down through
+multiple layers of modules and components is quite inconvenient, and it’s
+always a pain to decide how to categorize the APIs into different traits
+properly.</p>
+<p>Finally, the author decided to just use a big monolithic trait for every
+component, and use <code>crate_interface</code> to eliminate the generic parameter.
+(Although there are multiple traits in this crate, technically in the
+current implementation the link-time symbol space is used as a big
+monolithic trait.) Theoretically, this may slightly increase the
+difficulty of re-using a single component in a new software project, but
+the author believes that it will reduce the overall complexity when not
+one but a few related components are re-used together.</p>
+</li>
+<li>
+<p><strong>Enable portability of the Hypervisor across different unikernels.</strong></p>
+<p>Technically, the whole AxVisor Hypervisor can be ported to different
+unikernels by implementing the APIs defined in this crate (although not
+tested yet). If such porting is successful, this crate can also be used as
+a tested hardware-and-unikernel abstraction layer for other hypervisor
+projects.</p>
+</li>
+</ul>
+<p>This crate also provides a standard way to define and implement APIs, with
+the <a href="attr.api_def.html" title="attr axvisor_api::api_def"><code>api_def</code></a> and <a href="attr.api_impl.html" title="attr axvisor_api::api_impl"><code>api_impl</code></a> procedural macros. They are built on top of
+the <code>crate_interface</code> crate, which provides the low-level functionalities
+of defining and implementing crate-level interfaces.</p>
+<h2 id="how-to-define-and-implement-apis"><a class="doc-anchor" href="#how-to-define-and-implement-apis">§</a>How to define and implement APIs</h2><h3 id="define-apis"><a class="doc-anchor" href="#define-apis">§</a>Define APIs</h3>
+<p>To define APIs, you can use the <code>api_def</code> attribute on a trait defining the
+API, with each API function defined as a regular function in the trait. It’s
+recommended to pack the trait definition and related definitions (like type
+aliases) into a module for better organization.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">mod </span>example {
+    <span class="doccomment">/// Example API definition
+    </span><span class="attr">#[api_def]
+    </span><span class="kw">pub trait </span>ExampleIf {
+        <span class="doccomment">/// An example API function
+        </span><span class="kw">fn </span>example_func(arg: usize) -&gt; usize;
+        <span class="doccomment">/// Another example API function
+        </span><span class="kw">fn </span>another_func();
+    }
+}
+
+<span class="kw">fn </span>use_example_api() {
+    <span class="kw">let </span>result = example::example_func(<span class="number">42</span>);
+    example::another_func();
+}</code></pre></div>
+<p><code>api_def</code> will generate a caller function for each API function defined in
+the trait, at the same level as the trait definition. The generated callers
+can be used to invoke the API functions, as demonstrated above.</p>
+<h3 id="implement-apis"><a class="doc-anchor" href="#implement-apis">§</a>Implement APIs</h3>
+<p>Defined APIs should be implemented somewhere, unless they are not used
+anywhere. To implement APIs, the implementer should define an empty struct
+and implement the API trait for the struct, with the <code>api_impl</code> attribute on
+the <code>impl</code> block. For example,</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">mod </span>example {
+    <span class="doccomment">/// Example API definition
+    </span><span class="attr">#[api_def]
+    </span><span class="kw">pub trait </span>ExampleIf {
+        <span class="doccomment">/// An example API function
+        </span><span class="kw">fn </span>example_func(arg: usize) -&gt; usize;
+        <span class="doccomment">/// Another example API function
+        </span><span class="kw">fn </span>another_func();
+    }
+}
+
+<span class="kw">struct </span>ExampleImpl;
+
+<span class="attr">#[api_impl]
+</span><span class="kw">impl </span>example::ExampleIf <span class="kw">for </span>ExampleImpl {
+    <span class="kw">fn </span>example_func(arg: usize) -&gt; usize {
+        arg + <span class="number">1
+    </span>}
+
+    <span class="kw">fn </span>another_func() {
+        <span class="macro">println!</span>(<span class="string">"Another function called"</span>);
+    }
+}
+
+<span class="kw">fn </span>main() {
+    <span class="kw">let </span>result = example::example_func(<span class="number">42</span>);
+    <span class="macro">assert_eq!</span>(result, <span class="number">43</span>);
+    example::another_func(); <span class="comment">// prints "Another function called"
+</span>}</code></pre></div>
+</div></details><h2 id="modules" class="section-header">Modules<a href="#modules" class="anchor">§</a></h2><dl class="item-table"><dt><a class="mod" href="arch/index.html" title="mod axvisor_api::arch">arch</a></dt><dd>Architecture-specific APIs.</dd><dt><a class="mod" href="host/index.html" title="mod axvisor_api::host">host</a></dt><dd>Host system related APIs.</dd><dt><a class="mod" href="memory/index.html" title="mod axvisor_api::memory">memory</a></dt><dd>Memory allocation and address translation APIs.</dd><dt><a class="mod" href="time/index.html" title="mod axvisor_api::time">time</a></dt><dd>Time and timer APIs.</dd><dt><a class="mod" href="vmm/index.html" title="mod axvisor_api::vmm">vmm</a></dt><dd>Virtual machine management APIs.</dd></dl><h2 id="attributes" class="section-header">Attribute Macros<a href="#attributes" class="anchor">§</a></h2><dl class="item-table"><dt><a class="attr" href="attr.api_def.html" title="attr axvisor_api::api_def">api_def</a></dt><dd>Define an AxVisor API interface.</dd><dt><a class="attr" href="attr.api_impl.html" title="attr axvisor_api::api_impl">api_<wbr>impl</a></dt><dd>Implement an AxVisor API interface.</dd></dl></section></div></main></body></html>

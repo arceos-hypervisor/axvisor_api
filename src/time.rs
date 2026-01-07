@@ -11,7 +11,7 @@ pub type TimeValue = Duration;
 pub type Nanos = u64;
 /// Tick count.
 pub type Ticks = u64;
-/// Cancel token， used to cancel a scheduled timer event.
+/// Cancel token, used to cancel a scheduled timer event.
 pub type CancelToken = usize;
 
 /// The API trait for time and timer functionalities.

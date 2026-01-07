@@ -11,7 +11,8 @@ pub trait MemoryIf {
     fn alloc_contiguous_frames(num_frames: usize, frame_align_pow2: usize) -> Option<PhysAddr>;
     /// Deallocate a frame allocated previously by [`alloc_frame`].
     fn dealloc_frame(addr: PhysAddr);
-    /// Deallocate a number of contiguous frames.
+    /// Deallocate a number of contiguous frames allocated previously by
+    /// [`alloc_contiguous_frames`].
     fn dealloc_contiguous_frames(first_addr: PhysAddr, num_frames: usize);
     /// Convert a physical address to a virtual address.
     fn phys_to_virt(addr: PhysAddr) -> VirtAddr;

@@ -1,11 +1,17 @@
 use memory_addr::{pa, va};
 
 mod memory_impl {
-    use core::sync::atomic::AtomicUsize;
+    extern crate std; // in test only
+
     use memory_addr::{PhysAddr, VirtAddr, pa, va};
+    use std::sync::{
+        Mutex, MutexGuard,
+        atomic::{AtomicUsize, Ordering},
+    };
 
     static ALLOCATED: AtomicUsize = AtomicUsize::new(0);
     static RETURNED_SUM: AtomicUsize = AtomicUsize::new(0);
+    static LOCK: Mutex<()> = Mutex::new(());
     pub const VA_PA_OFFSET: usize = 0x1000;
 
     pub struct MemoryIfImpl;
@@ -13,7 +19,7 @@ mod memory_impl {
     #[crate::api_impl]
     impl crate::memory::MemoryIf for MemoryIfImpl {
         fn alloc_frame() -> Option<PhysAddr> {
-            let value = ALLOCATED.fetch_add(1, core::sync::atomic::Ordering::SeqCst);
+            let value = ALLOCATED.fetch_add(1, Ordering::Relaxed);
 
             Some(pa!(value * 0x1000))
         }
@@ -26,7 +32,7 @@ mod memory_impl {
         }
 
         fn dealloc_frame(addr: PhysAddr) {
-            RETURNED_SUM.fetch_add(addr.as_usize(), core::sync::atomic::Ordering::SeqCst);
+            RETURNED_SUM.fetch_add(addr.as_usize(), Ordering::Relaxed);
         }
 
         fn dealloc_contiguous_frames(_first_addr: PhysAddr, _num_frames: usize) {
@@ -46,12 +52,15 @@ mod memory_impl {
     ///
     /// Note that this function demonstrates that non-API functions work well in a module with the `api_mod_impl` attribute.
     pub fn get_returned_sum() -> usize {
-        RETURNED_SUM.load(core::sync::atomic::Ordering::SeqCst)
+        RETURNED_SUM.load(Ordering::Relaxed)
     }
 
-    pub fn clear() {
-        ALLOCATED.store(0, core::sync::atomic::Ordering::SeqCst);
-        RETURNED_SUM.store(0, core::sync::atomic::Ordering::SeqCst);
+    /// Start a test by acquiring the lock and resetting the internal state.
+    pub fn enter_test() -> MutexGuard<'static, ()> {
+        let guard = LOCK.lock().unwrap();
+        ALLOCATED.store(0, Ordering::Relaxed);
+        RETURNED_SUM.store(0, Ordering::Relaxed);
+        guard
     }
 }
 
@@ -59,7 +68,7 @@ mod memory_impl {
 pub fn test_memory() {
     use crate::memory;
 
-    memory_impl::clear();
+    let guard = memory_impl::enter_test();
 
     let frame1 = memory::alloc_frame();
     let frame2 = memory::alloc_frame();
@@ -78,13 +87,15 @@ pub fn test_memory() {
 
     assert_eq!(memory::phys_to_virt(pa!(0)), va!(memory_impl::VA_PA_OFFSET));
     assert_eq!(memory::virt_to_phys(va!(memory_impl::VA_PA_OFFSET)), pa!(0));
+
+    drop(guard);
 }
 
 #[test]
 pub fn test_memory_phys_frame() {
     use crate::memory::{self, PhysFrame};
 
-    memory_impl::clear();
+    let guard = memory_impl::enter_test();
 
     let _ = memory::alloc_frame();
     let frame1 = PhysFrame::alloc().unwrap();
@@ -101,4 +112,6 @@ pub fn test_memory_phys_frame() {
     assert_eq!(memory_impl::get_returned_sum(), 0x5000);
     drop(frame1);
     assert_eq!(memory_impl::get_returned_sum(), 0x6000);
+
+    drop(guard);
 }

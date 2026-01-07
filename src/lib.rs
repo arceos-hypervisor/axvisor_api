@@ -58,11 +58,11 @@
 //! aliases) into a module for better organization.
 //!
 //! ```rust, standalone_crate
-//! # // some inconviniece brought by proc-macro-name and doctest
+//! # // some inconvenience brought by proc-macro-name and doctest
 //! # use axvisor_api::__priv;
 //! # fn main() {}
 //! mod example {
-//!     # // some inconviniece brought by proc-macro-name and doctest
+//!     # // some inconvenience brought by proc-macro-name and doctest
 //!     # use axvisor_api::api_def;
 //!     /// Example API definition
 //!     #[api_def]
@@ -87,15 +87,15 @@
 //! ## Implement APIs
 //!
 //! Defined APIs should be implemented somewhere, unless they are not used
-//! anywhere. To implement APIs, the implementer should define a empty struct
+//! anywhere. To implement APIs, the implementer should define an empty struct
 //! and implement the API trait for the struct, with the `api_impl` attribute on
 //! the `impl` block. For example,
 //!
 //! ```rust, standalone_crate
-//! # // some inconviniece brought by proc-macro-name and doctest
+//! # // some inconvenience brought by proc-macro-name and doctest
 //! # use axvisor_api::{api_impl, __priv};
 //! mod example {
-//!     # // some inconviniece brought by proc-macro-name and doctest
+//!     # // some inconvenience brought by proc-macro-name and doctest
 //!     # use axvisor_api::{api_def, __priv};
 //!     /// Example API definition
 //!     #[api_def]

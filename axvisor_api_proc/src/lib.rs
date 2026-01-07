@@ -16,7 +16,7 @@ fn axvisor_api_crate() -> TokenStream {
     }
 }
 
-/// The namespace used for AxVisor APIs in
+/// The namespace used for AxVisor APIs when calling `crate_interface` macros.
 fn axvisor_api_namespace() -> Ident {
     const AXVISOR_API_NS: &str = "AxVisorApi";
     Ident::new(AXVISOR_API_NS, Span::call_site())

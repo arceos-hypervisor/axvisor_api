@@ -1,7 +1,5 @@
 use memory_addr::{pa, va};
 
-/// A demonstration of the `memory` API implementation.
-#[crate::api_mod_impl(crate::memory)]
 mod memory_impl {
     use core::sync::atomic::AtomicUsize;
     use memory_addr::{PhysAddr, VirtAddr, pa, va};
@@ -10,25 +8,38 @@ mod memory_impl {
     static RETURNED_SUM: AtomicUsize = AtomicUsize::new(0);
     pub const VA_PA_OFFSET: usize = 0x1000;
 
-    extern fn alloc_frame() -> Option<PhysAddr> {
-        let value = ALLOCATED.fetch_add(1, core::sync::atomic::Ordering::SeqCst);
+    pub struct MemoryIfImpl;
 
-        Some(pa!(value * 0x1000))
-    }
+    #[crate::api_impl]
+    impl crate::memory::MemoryIf for MemoryIfImpl {
+        fn alloc_frame() -> Option<PhysAddr> {
+            let value = ALLOCATED.fetch_add(1, core::sync::atomic::Ordering::SeqCst);
 
-    extern fn alloc_contiguous_frames(
-        _num_frames: usize,
-        _frame_align_pow2: usize,
-    ) -> Option<PhysAddr> {
-        unimplemented!();
-    }
+            Some(pa!(value * 0x1000))
+        }
 
-    extern fn dealloc_frame(addr: PhysAddr) {
-        RETURNED_SUM.fetch_add(addr.as_usize(), core::sync::atomic::Ordering::SeqCst);
-    }
+        fn alloc_contiguous_frames(
+            _num_frames: usize,
+            _frame_align_pow2: usize,
+        ) -> Option<PhysAddr> {
+            unimplemented!();
+        }
 
-    extern fn dealloc_contiguous_frames(_first_addr: PhysAddr, _num_frames: usize) {
-        unimplemented!();
+        fn dealloc_frame(addr: PhysAddr) {
+            RETURNED_SUM.fetch_add(addr.as_usize(), core::sync::atomic::Ordering::SeqCst);
+        }
+
+        fn dealloc_contiguous_frames(_first_addr: PhysAddr, _num_frames: usize) {
+            unimplemented!();
+        }
+
+        fn phys_to_virt(addr: PhysAddr) -> VirtAddr {
+            va!(addr.as_usize() + VA_PA_OFFSET) // Example implementation
+        }
+
+        fn virt_to_phys(addr: VirtAddr) -> PhysAddr {
+            pa!(addr.as_usize() - VA_PA_OFFSET) // Example implementation
+        }
     }
 
     /// Get the sum of all returned physical addresses.
@@ -41,14 +52,6 @@ mod memory_impl {
     pub fn clear() {
         ALLOCATED.store(0, core::sync::atomic::Ordering::SeqCst);
         RETURNED_SUM.store(0, core::sync::atomic::Ordering::SeqCst);
-    }
-
-    extern fn phys_to_virt(addr: PhysAddr) -> VirtAddr {
-        va!(addr.as_usize() + VA_PA_OFFSET) // Example implementation
-    }
-
-    extern fn virt_to_phys(addr: VirtAddr) -> PhysAddr {
-        pa!(addr.as_usize() - VA_PA_OFFSET) // Example implementation
     }
 }
 
@@ -79,8 +82,7 @@ pub fn test_memory() {
 
 #[test]
 pub fn test_memory_phys_frame() {
-    use crate::memory;
-    use crate::memory::PhysFrame;
+    use crate::memory::{self, PhysFrame};
 
     memory_impl::clear();
 

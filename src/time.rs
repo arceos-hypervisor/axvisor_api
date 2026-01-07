@@ -14,6 +14,7 @@ pub type Ticks = u64;
 /// Cancel token， used to cancel a scheduled timer event.
 pub type CancelToken = usize;
 
+/// The API trait for time and timer functionalities.
 #[crate::api_def]
 pub trait TimeIf {
     /// Get the current tick count.

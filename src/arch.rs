@@ -2,6 +2,7 @@
 
 use super::{memory::PhysAddr, vmm::InterruptVector};
 
+/// The API trait for architecture-specific functionalities.
 #[crate::api_def]
 pub trait ArchIf {
     /// Inject a virtual interrupt to the current virtual CPU.

@@ -7,6 +7,7 @@ pub type VCpuId = usize;
 /// Interrupt vector.
 pub type InterruptVector = u8;
 
+/// The API trait for virtual machine management functionalities.
 #[crate::api_def]
 pub trait VmmIf {
     /// Get the ID of the current virtual machine.

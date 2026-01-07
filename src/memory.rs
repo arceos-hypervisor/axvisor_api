@@ -2,6 +2,7 @@
 
 pub use memory_addr::{PhysAddr, VirtAddr};
 
+/// The API trait for memory allocation and address translation functionalities.
 #[crate::api_def]
 pub trait MemoryIf {
     /// Allocate a frame.

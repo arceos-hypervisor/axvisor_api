@@ -22,6 +22,7 @@ pub trait MemoryIf {
 
 /// [`AxMmHal`](axaddrspace::AxMmHal) implementation by axvisor_api.
 #[doc(hidden)]
+#[derive(Debug)]
 pub struct AxMmHalApiImpl;
 
 impl axaddrspace::AxMmHal for AxMmHalApiImpl {

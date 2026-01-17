@@ -22,4 +22,8 @@ pub trait ArchIf {
     /// Get the base address of the GIC redistributor in the host system.
     #[cfg(target_arch = "aarch64")]
     fn get_host_gicr_base() -> PhysAddr;
+
+    /// Retrieve the current pending interrupt for the CPU from the physical hardware.
+    #[cfg(target_arch = "aarch64")]
+    fn fetch_irq() -> u64;
 }

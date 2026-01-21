@@ -10,9 +10,11 @@ pub type InterruptVector = u8;
 /// The API trait for virtual machine management functionalities.
 #[crate::api_def]
 pub trait VmmIf {
-    /// Get the ID of the current virtual machine.
+    /// Get the ID of the virtual machine executing on the current physical CPU.
+    /// It MAY differ from the ID of the virtual machine calling this function.
     fn current_vm_id() -> VMId;
-    /// Get the ID of the current virtual CPU.
+    /// Get the ID of the virtual CPU executing on the current physical CPU.
+    /// It MAY differ from the ID of the virtual CPU calling this function.
     fn current_vcpu_id() -> VCpuId;
     /// Get the number of virtual CPUs in a virtual machine.
     fn vcpu_num(vm_id: VMId) -> Option<usize>;
@@ -26,12 +28,14 @@ pub trait VmmIf {
     fn notify_vcpu_timer_expired(vm_id: VMId, vcpu_id: VCpuId);
 }
 
-/// Get the number of virtual CPUs in the current virtual machine.
+/// Get the number of virtual CPUs in the virtual machine executing on the
+/// current physical CPU.
 pub fn current_vm_vcpu_num() -> usize {
     vcpu_num(current_vm_id()).unwrap()
 }
 
-/// Get the mask of active virtual CPUs in the current virtual machine.
+/// Get the mask of active virtual CPUs in the virtual machine executing on the
+/// current physical CPU.
 pub fn current_vm_active_vcpus() -> usize {
     active_vcpus(current_vm_id()).unwrap()
 }

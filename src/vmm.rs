@@ -7,6 +7,11 @@ pub type VCpuId = usize;
 /// Interrupt vector.
 pub type InterruptVector = u8;
 
+/// The maximum number of virtual CPUs supported in a virtual machine.
+pub const MAX_VCPU_NUM: usize = 64;
+
+pub type VCpuSet = cpumask::CpuMask<MAX_VCPU_NUM>;
+
 /// The API trait for virtual machine management functionalities.
 #[crate::api_def]
 pub trait VmmIf {
@@ -22,6 +27,8 @@ pub trait VmmIf {
     fn active_vcpus(vm_id: VMId) -> Option<usize>;
     /// Inject an interrupt to a virtual CPU.
     fn inject_interrupt(vm_id: VMId, vcpu_id: VCpuId, vector: InterruptVector);
+    /// Inject an interrupt to a set of virtual CPUs.
+    fn inject_interrupt_to_cpus(vm_id: VMId, vcpu_set: VCpuSet, vector: InterruptVector);
     /// Notify that a virtual CPU timer has expired.
     ///
     /// TODO: determine whether we can skip this function.

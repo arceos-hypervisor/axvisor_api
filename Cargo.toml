@@ -27,3 +27,4 @@ axvisor_api_proc = { path = "axvisor_api_proc", version = "0.2.0"}
 crate_interface = "0.2"
 memory_addr = "0.4"
 axaddrspace = "0.2.0"
+cpumask = "0.1.0"

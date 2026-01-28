@@ -29,7 +29,7 @@ axvisor_api_proc = { path = "axvisor_api_proc", version = "0.2.0" }
 # === 第三方库 ===
 # 地址空间抽象
 axaddrspace = "0.1.0"
-# 接口定义工具
+# Interface definition tools
 crate_interface = "0.2"
 # 物理/虚拟地址类型
 memory_addr = "0.4"

@@ -22,16 +22,16 @@ license.workspace = true
 repository.workspace = true
 
 [dependencies]
-# === 核心组件 ===
-# 过程宏定义
+# === Core Components ===
+# Procedural macro definitions
 axvisor_api_proc = { path = "axvisor_api_proc", version = "0.2.0" }
 
-# === 第三方库 ===
-# 地址空间抽象
+# === Third-party Libraries ===
+# Address space abstraction
 axaddrspace = "0.1.0"
-# 接口定义工具
+# Interface definition tools
 crate_interface = "0.2"
-# 物理/虚拟地址类型
+# Physical/virtual address types
 memory_addr = "0.4"
 
 [package.metadata.docs.rs]

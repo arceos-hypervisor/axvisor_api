@@ -15,11 +15,11 @@ repository.workspace = true
 proc-macro = true
 
 [dependencies]
-# 过程宏辅助工具
+# Procedural macro helper utilities
 proc-macro2 = "1.0"
-# Crate name lookup
+# Crate name resolution
 proc-macro-crate = "3.1.0"
-# 代码生成
+# Code generation
 quote = "1.0"
-# Rust 语法解析
+# Rust syntax parsing
 syn = { version = "2.0", features = ["full"] }

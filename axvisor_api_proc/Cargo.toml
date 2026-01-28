@@ -17,7 +17,7 @@ proc-macro = true
 [dependencies]
 # 过程宏辅助工具
 proc-macro2 = "1.0"
-# crate 名称查找
+# Crate name lookup
 proc-macro-crate = "3.1.0"
 # 代码生成
 quote = "1.0"

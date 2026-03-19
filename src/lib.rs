@@ -158,6 +158,3 @@ pub mod __priv {
         pub use crate_interface::{call_interface, def_interface, impl_interface};
     }
 }
-
-#[cfg(test)]
-mod test;

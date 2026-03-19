@@ -30,8 +30,8 @@ mod memory_impl {
 
     pub struct MemoryIfImpl;
 
-    #[crate::api_impl]
-    impl crate::memory::MemoryIf for MemoryIfImpl {
+    #[axvisor_api::api_impl]
+    impl axvisor_api::memory::MemoryIf for MemoryIfImpl {
         fn alloc_frame() -> Option<PhysAddr> {
             let value = ALLOCATED.fetch_add(1, Ordering::Relaxed);
 
@@ -80,7 +80,7 @@ mod memory_impl {
 
 #[test]
 pub fn test_memory() {
-    use crate::memory;
+    use axvisor_api::memory;
 
     let guard = memory_impl::enter_test();
 
@@ -107,7 +107,7 @@ pub fn test_memory() {
 
 #[test]
 pub fn test_memory_phys_frame() {
-    use crate::memory::{self, PhysFrame};
+    use axvisor_api::memory::{self, PhysFrame};
 
     let guard = memory_impl::enter_test();
 
